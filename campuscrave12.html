@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campus Crave</title>
+  <style>
+    :root{
+      --bg:#fffaf8;
+      --card:#ffffff;
+      --brand:#0f3b2d;
+      --accent:#ff7a18;
+      --muted:#6b6b6b;
+      --radius:12px;
+      --shadow:0 6px 22px rgba(15,15,15,0.06);
+    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial,Helvetica,sans-serif}
+    body{margin:0;background:var(--bg);color:#123;min-height:100vh;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#fff;border-bottom:1px solid #f0eae7;position:sticky;top:0;z-index:40}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#eee;display:block}
+    .brand-text .title{font-weight:700;color:var(--brand)}
+    .brand-text .subtitle{font-size:12px;color:var(--muted)}
+    .search{min-width:320px;padding:10px 14px;border-radius:28px;border:1px solid #eee}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .link{background:transparent;border:none;color:var(--muted);cursor:pointer}
+    .cart{background:transparent;border:1px solid #eee;padding:8px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;cursor:pointer}
+    .cart-count{background:var(--accent);color:#fff;border-radius:12px;padding:2px 8px;font-size:13px}
+    .container{max-width:1100px;margin:20px auto;padding:0 18px;flex:1}
+    .hero{display:flex;gap:18px;padding:18px 0;align-items:center;justify-content:space-between}
+    .hero-text h1{margin:0;font-size:24px}
+    .hero-text p{color:var(--muted);margin:6px 0 12px}
+    .cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .menu{padding:8px 0}
+    .category{margin-bottom:22px}
+    .category h2{margin:6px 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+    .food-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+    .food-img{width:100%;height:160px;object-fit:cover}
+    .food-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+    .food-name{margin:0;font-size:16px}
+    .food-meta{font-size:13px;color:var(--muted)}
+    .food-desc{margin:0;color:var(--muted);font-size:13px}
+    .food-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .price{font-weight:700}
+    .add-btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    footer{padding:16px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid #f0e6e3}
+    .login-overlay{position:fixed;inset:0;background:rgba(10,10,10,0.45);display:flex;align-items:center;justify-content:center;z-index:60}
+    .login-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+    .login-brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .login-brand img{width:40px;height:40px;border-radius:8px}
+    .login-form{display:flex;flex-direction:column;gap:10px}
+    .login-form input{padding:10px;border-radius:8px;border:1px solid #eee;background:#fbfaf9}
+    .btn{padding:10px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff}
+    .small{font-size:13px;color:var(--muted);text-align:center}
+    .cart-panel{position:fixed;right:14px;bottom:14px;width:320px;max-height:70vh;background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.18);overflow:auto;z-index:70;padding:12px;display:none;flex-direction:column;gap:8px}
+    .cart-item{display:flex;gap:8px;align-items:center}
+    .ci-img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+    .ci-body{flex:1}
+    .qty-btn{padding:6px 8px;border-radius:6px;border:1px solid #eee;background:transparent;cursor:pointer}
+    .cart-total{display:flex;justify-content:space-between;align-items:center;padding-top:6px;border-top:1px dashed #eee}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+    @media (max-width:700px){
+      .search{min-width:120px}
+      .hero{flex-direction:column;align-items:flex-start}
+      .cart-panel{left:14px;right:14px;width:auto}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-left">
+      <img class="logo" src="campuscrave.png" alt="Campus Crave" />
+      <div class="brand-text">
+        <div class="title">Campus Crave</div>
+        <div class="subtitle">Exclusively for SRMU </div>
+      </div>
+    </div>
+    <div>
+      <input id="search" class="search" placeholder="Search canteen items, burgers..." />
+    </div>
+    <div class="nav-right">
+      <button id="loginBtn" class="link">Login</button>
+      <button id="openCart" class="cart">
+        <span>🛒</span>
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>CANTINE SNACKS, DELIVERED TO YOUR DORM</h1>
+        <p>• Student favorites from campus canteens <br>• Fast delivery</p>
+        <button id="orderNow" class="cta">Order Now</button>
+      </div>
+      <img class="hero" src= "https://images.unsplash.com/photo-1538334421852-687c439c92f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2FudGluZXxlbnwwfHwwfHx8MA%3D%3D" alt="hero" style="width:500px;height:200px;object-fit:cover;border-radius:20px" />
+      <div style="color:var(--muted);font-weight:500">Open till 2 PM</div>
+        </div>
+      <div class="categories" id="categories"></div>
+      </div>
+      <div style="width:420px">
+        <div class="hero-card" style="background:linear-gradient(180deg,#0b3450,#103a50);color:#fff;padding:30px;border-radius:30px;box-shadow: 18px 8px rgba(16,52,80,0.12)">
+          <h3 style="margin:0 0 8px">Campus Crave Special</h3>
+          <p style="margin:0;color:rgba(255,255,255,0.9)">SRMU Signature Pizza • Freshly baked • 30 min delivery</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="menuArea" class="menu"></section>
+  </main>
+
+  <footer> © Campus Crave <br>Thank You !</footer>
+
+  <div id="loginOverlay" class="login-overlay" style="display:none">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="campuscrave.png" alt="logo" />
+        <div>
+          <div style="font-weight:700">Campus Crave</div>
+          <div style="font-size:13px;color:var(--muted)">Sign in to continue</div>
+        </div>
+      </div>
+      <form id="loginForm" class="login-form">
+        <input id="email" type="email" placeholder="Email" required />
+        <input id="password" type="password" placeholder="Password (min 6 chars)" required minlength="6" />
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <div style="margin-top:10px">
+        <div class="small">Demo login stores session in localStorage</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartPanel" class="cart-panel"></div>
+  <script></script>
+
+  <script>
+    const MENU = [
+      { id:1, name:"SRMU Signature Pizza", price:199, category:"Pizza", canteen:"Main Canteen", description:"Whole-grain pizza with house sauce and cheese", image:"https://tse4.mm.bing.net/th/id/OIP.sej_xC02QcWl4sICftBdgwHaFj?pid=Api&P=0&h=180" },
+      { id:1, name:"Corn Pizza", price:199, category:"Pizza", canteen:"Main Canteen", description:"Whole-corn pizza with house sauce and cheese", image:"https://plus.unsplash.com/premium_photo-1675451537385-e76cd7e78087?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y29ybiUyMHBpenphfGVufDB8fDB8fHww" },
+      { id:2, name:"VC's Healthy Bowl", price:249, category:"Healthy Bowls", canteen:"Health Corner", description:"Quinoa, greens, roasted veggies, tahini", image:"https://tse4.mm.bing.net/th/id/OIP.ifD5K82eJw9AZWxD7tPmBQHaE8?pid=Api&P=0&h=180" },
+      { id:3, name:"Campus Combo", price:149, category:"Combo", canteen:"Campus Canteen", description:"Meal deal with main + drink", image:"https://tse1.mm.bing.net/th/id/OIP.v68RCnQ0fAcjI2OYtkQkngHaFj?pid=Api&P=0&h=180" },
+      { id:4, name:"Classic Veg Burger", price:119, category:"Burgers", canteen:"Burger Hut", description:"Veg patty, lettuce, tomato, special sauce", image:"https://tse2.mm.bing.net/th/id/OIP.Ms1Tu5-c-r5LOQ5ZLMkg5gHaE8?pid=Api&P=0&h=180" },
+      { id:5, name:"Cheese Burger", price:159, category:"Burgers", canteen:"Burger Hut", description:"Grilled cheese with smoky mayo", image:"https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hlZXNlJTIwYnVyZ2VyfGVufDB8fDB8fHww" },
+      { id:6, name:"Masala Maggi", price:49, category:"Snacks", canteen:"Snack Stall", description:"Spicy masala-style Maggi", image:"https://tse1.mm.bing.net/th/id/OIP.lqXy9Y5Jjag7_Y-WV9W8LAHaEK?pid=Api&P=0&h=180" },
+      { id:7, name:"French Fries", price:59, category:"Sides", canteen:"Snack Stall", description:"Crispy salted fries", image:"https://tse1.mm.bing.net/th/id/OIP.mvp6hquytddcJjoxkd96ewHaE8?pid=Api&P=0&h=180" },
+      { id:8, name:"Cold Coffee", price:99, category:"Beverages", canteen:"Coffee Corner", description:"Iced coffee with whipped cream", image:"https://tse2.mm.bing.net/th/id/OIP.ZbnMD3_86ETv35cKgww0BQHaFj?pid=Api&P=0&h=180" },
+      { id:9, name:"Filter Coffee", price:39, category:"Beverages", canteen:"Coffee Corner", description:"Traditional filtered coffee", image:"https://tse1.mm.bing.net/th/id/OIP.OtvapPL0r-ee11g7-6K94wHaEK?pid=Api&P=0&h=180" },
+      { id:10, name:"Paneer Wrap", price:129, category:"Wraps", canteen:"Wraps Point", description:"Grilled paneer, greens, mint chutney", image:"https://tse4.mm.bing.net/th/id/OIP.HfDxrNsi6nG2TspxIKY-bwHaE8?pid=Api&P=0&h=180" },
+      { id:11, name:"Veg Biryani", price:139, category:"Rice", canteen:"Main Canteen", description:"Aromatic basmati with vegetables and raita", image:"https://tse1.mm.bing.net/th/id/OIP.eNPtoFIvAZzN9d8lXQrFSwHaE8?pid=Api&P=0&h=180" },
+      { id:12, name:"Chicken Biryani", price:189, category:"Rice", canteen:"Main Canteen", description:"Spiced chicken biryani with salad", image:"https://tse2.mm.bing.net/th/id/OIP.0csI89pXHQSxumqiZz_tIwHaE8?pid=Api&P=0&h=180" },
+      { id:13, name:"Allu ka paratha", price:69, category:"Breakfast", canteen:"Breakfast Hut", description:"Two-paratha with souce", image:"https://tse1.mm.bing.net/th/id/OIP.sSlrjBvSUU2mwGnhgDQ_hQAAAA?pid=Api&P=0&h=180" },
+      { id:14, name:"Idli Sambar", price:79, category:"Breakfast", canteen:"South Bite", description:"Steamed idli served with sambar and chutney", image:"https://tse3.mm.bing.net/th/id/OIP.XrZChgu_VNzaP5QnP5HaXgHaE8?pid=Api&P=0&h=180" },
+      { id:15, name:"Samosa (2 pcs)", price:49, category:"Snacks", canteen:"Snack Stall", description:"Crispy potato samosas with chutney", image:"https://tse1.mm.bing.net/th/id/OIP.gzfLita-jg6Uhv0TfA8RZgHaHa?pid=Api&P=0&h=180" },
+      { id:15, name:"Paneer Samosa (2 pcs)", price:79, category:"Snacks", canteen:"Snack Stall", description:"Crispy paneer samosas with chutney", image:"https://tse2.mm.bing.net/th/id/OIP.fJxv6Xzfh5_VwwlWsK3Q0AHaFP?pid=Api&P=0&h=180" },
+      { id:16, name:"Veg Noodles", price:99, category:"Noodles", canteen:"Noodle Bar", description:"Stir-fried noodles with vegetables", image:"https://tse1.mm.bing.net/th/id/OIP.Quha6ZkRjQ_j-Yl3-1uzawHaE8?pid=Api&P=0&h=180" },
+      { id:17, name:"Manchurian", price:179, category:"Asian", canteen:"Noodle Bar", description:"manchurian", image:"https://tse1.mm.bing.net/th/id/OIP.kgin_xUFwl_a1Bc9PTaKEAHaEO?pid=Api&P=0&h=180" },
+      { id:18, name:"Fruit Salad", price:89, category:"Healthy", canteen:"Health Corner", description:"Seasonal fruit bowl with honey", image:"https://weekdaypescatarian.com/wp-content/uploads/2022/07/IMG_2143-scaled.jpg" },
+      { id:19, name:"Chocolate Brownie", price:69, category:"Dessert", canteen:"Bakery", description:"Warm fudge brownie", image:"https://tse2.mm.bing.net/th/id/OIP.Vi3i7sIN0MlL_L3OqlGa4QHaFj?pid=Api&P=0&h=180" },
+      { id:20, name:"Veg Thali", price:169, category:"Thali", canteen:"Main Canteen", description:"Full meal with 3 curries, dal, rice, roti", image:"https://st2.depositphotos.com/5653638/11520/i/950/depositphotos_115207140-stock-photo-indian-thali-indian-food-thali.jpg" }
+    ];
+
+    const menuArea = document.getElementById('menuArea');
+    const searchInput = document.getElementById('search');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const cartPanel = document.getElementById('cartPanel');
+    const openCartBtn = document.getElementById('openCart');
+    const cartCountEl = document.getElementById('cartCount');
+    const orderNow = document.getElementById('orderNow');
+
+    let CART = JSON.parse(localStorage.getItem('campuscrave_cart') || '{}');
+    let USER = JSON.parse(localStorage.getItem('campuscrave_user') || 'null');
+
+    function saveCart(){
+      localStorage.setItem('campuscrave_cart', JSON.stringify(CART));
+      updateCartCount();
+    }
+
+    function updateCartCount(){
+      const total = Object.values(CART).reduce((s,i)=>s+i.qty,0);
+      cartCountEl.textContent = total;
+    }
+
+    function renderMenu(filter){
+      const q = (filter||'').trim().toLowerCase();
+      const filtered = MENU.filter(i => {
+        if(!q) return true;
+        return (i.name + ' ' + i.description + ' ' + i.category + ' ' + i.canteen).toLowerCase().includes(q);
+      });
+      const grouped = filtered.reduce((acc,item)=>{
+        acc[item.category] = acc[item.category] || [];
+        acc[item.category].push(item);
+        return acc;
+      }, {});
+      menuArea.innerHTML = '';
+      for(const cat of Object.keys(grouped)){
+        const section = document.createElement('section');
+        section.className = 'category';
+        const h = document.createElement('h2');
+        h.textContent = cat;
+        section.appendChild(h);
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        for(const it of grouped[cat]){
+          const card = document.createElement('div');
+          card.className = 'food-card';
+          card.innerHTML = '<img class="food-img" src="'+it.image+'" alt=""><div class="food-body"><h3 class="food-name">'+it.name+'</h3><div class="food-meta">'+it.canteen+' • '+it.category+'</div><p class="food-desc">'+it.description+'</p><div class="food-footer"><div class="price">₹'+it.price+'</div><button class="add-btn">Add to Cart</button></div></div>';
+          const btn = card.querySelector('.add-btn');
+          btn.addEventListener('click', ()=>{ addToCart(it); });
+          grid.appendChild(card);
+        }
+        section.appendChild(grid);
+        menuArea.appendChild(section);
+      }
+      if(filtered.length===0){
+        const empty = document.createElement('div');
+        empty.className='empty';
+        empty.textContent = 'No items found.';
+        menuArea.appendChild(empty);
+      }
+    }
+
+    function addToCart(item){
+      const key = item.id;
+      if(CART[key]) CART[key].qty += 1; else CART[key] = {...item, qty:1};
+      saveCart();
+      showToast('"'+item.name+'" added to cart');
+    }
+
+    function showCart(){
+      cartPanel.style.display = 'flex';
+      cartPanel.innerHTML = '';
+      const items = Object.values(CART);
+      if(items.length===0){
+        cartPanel.innerHTML = '<div class="empty">Cart is empty</div>';
+        return;
+      }
+      for(const it of items){
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = '<img class="ci-img" src="'+it.image+'" alt=""><div class="ci-body"><div style="font-weight:700">'+it.name+'</div><div style="font-size:13px;color:var(--muted)">'+it.canteen+'</div><div style="margin-top:6px"><button class="qty-btn dec">-</button> <span style="padding:0 8px">'+it.qty+'</span> <button class="qty-btn inc">+</button></div></div><div style="text-align:right"><div style="font-weight:700">₹'+(it.price*it.qty)+'</div><div style="font-size:12px;color:var(--muted);margin-top:8px"><button class="qty-btn remove">Remove</button></div></div>';
+        const dec = row.querySelector('.dec');
+        const inc = row.querySelector('.inc');
+        const rem = row.querySelector('.remove');
+        dec.addEventListener('click', ()=>{ if(it.qty>1){ it.qty-=1; CART[it.id]=it; } else { delete CART[it.id]; } saveCart(); showCart(); });
+        inc.addEventListener('click', ()=>{ it.qty+=1; CART[it.id]=it; saveCart(); showCart(); });
+        rem.addEventListener('click', ()=>{ delete CART[it.id]; saveCart(); showCart(); });
+        cartPanel.appendChild(row);
+      }
+      const total = items.reduce((s,i)=>s+i.price*i.qty,0);
+      const foot = document.createElement('div');
+      foot.className = 'cart-total';
+      foot.innerHTML = '<div style="font-weight:700">Total ₹'+total+'</div><div><button id="placeOrder" class="btn primary">Place Order</button></div>';
+      cartPanel.appendChild(foot);
+      document.getElementById('placeOrder').addEventListener('click', ()=>{ placeOrder(total); });
+    }
+
+    function placeOrder(total){
+      if(!USER){ promptLogin(); return; }
+      if(confirm('Place order for ₹'+total+' ?')){ CART = {}; saveCart(); showCart(); alert('Order placed. Thanks!'); }
+    }
+
+    function promptLogin(){
+      loginOverlay.style.display = 'flex';
+    }
+
+    loginBtn.addEventListener('click', ()=>{ if(USER){ logout(); } else { loginOverlay.style.display = 'flex'; } });
+
+    loginForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const em = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      if(!em || pw.length<6){ alert('Enter valid credentials'); return; }
+      USER = { email: em };
+      localStorage.setItem('campuscrave_user', JSON.stringify(USER));
+      loginOverlay.style.display = 'none';
+      updateAuthUI();
+    });
+
+    function logout(){
+      if(confirm('Logout?')){ USER = null; localStorage.removeItem('campuscrave_user'); updateAuthUI(); }
+    }
+
+    function updateAuthUI(){
+      if(USER){ loginBtn.textContent = USER.email.split('@')[0]; } else { loginBtn.textContent = 'Login'; }
+    }
+
+    openCartBtn.addEventListener('click', ()=>{ showCart(); });
+
+    searchInput.addEventListener('input', (e)=>{ renderMenu(e.target.value); });
+
+    orderNow.addEventListener('click', ()=>{ window.scrollTo({ top: menuArea.offsetTop-40, behavior:'smooth' }); });
+
+    function showToast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.position='fixed';
+      t.style.left='50%';
+      t.style.transform='translateX(-50%)';
+      t.style.bottom='20px';
+      t.style.background='rgba(0,0,0,0.8)';
+      t.style.color='#fff';
+      t.style.padding='10px 14px';
+      t.style.borderRadius='8px';
+      t.style.zIndex=120;
+      document.body.appendChild(t);
+      setTimeout(()=>{ t.style.transition='opacity 300ms'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); },1200);
+    }
+
+    document.addEventListener('click', (e)=>{
+      if(cartPanel.style.display==='flex' && !cartPanel.contains(e.target) && !openCartBtn.contains(e.target)) cartPanel.style.display='none';
+      if(loginOverlay.style.display==='flex' && e.target===loginOverlay) loginOverlay.style.display='none';
+    });
+
+    updateAuthUI();
+    updateCartCount();
+    renderMenu('');
+  </script>
+</body>
+</html>
